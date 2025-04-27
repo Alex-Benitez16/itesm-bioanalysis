@@ -283,22 +283,32 @@ decomposeDnaString <- function(dna_obj) {
 ));
 }
 
+alpha_variant <- file.path("resources", "variants", "b117.fasta")
+beta_variant <- file.path("resources", "variants", "b1351.fasta")
+gamma_variant <- file.path("resources", "variants", "p1.fasta")
+delta_variant <- file.path("resources", "variants", "b16172_2.fasta")
+omicron_variant <- file.path("resources", "variants", "b11529.fasta")
+unnamed_variant_1 <- file.path("resources", "variants", "c37.fasta")
+unnamed_variant_2 <- file.path("resources", "variants", "b1525.fasta")
+unnamed_variant_3 <- file.path("resources", "variants", "ba1.fasta")
+
 
 # Obtain the genome sequences from FASTA files
-alpha_variant = readDNAStringSet("./resources/variants/b117.fasta")
-beta_variant = readDNAStringSet("./resources/variants/b1351.fasta")
-gamma_variant = readDNAStringSet("./resources/variants/p1.fasta")
-delta_variant = readDNAStringSet("./resources/variants/b16172_2.fasta")
-omicron_variant = readDNAStringSet("./resources/variants/b11529.fasta")
-unnamed_variant_1 = readDNAStringSet("./resources/variants/c37.fasta")
-unnamed_variant_2 = readDNAStringSet("./resources/variants/b1525.fasta")
-unnamed_variant_3 = readDNAStringSet("./resources/variants/ba1.fasta")
+alpha_variant = readDNAStringSet(alpha_variant)
+beta_variant = readDNAStringSet(beta_variant)
+gamma_variant = readDNAStringSet(gamma_variant)
+delta_variant = readDNAStringSet(delta_variant)
+omicron_variant = readDNAStringSet(omicron_variant)
+unnamed_variant_1 = readDNAStringSet(unnamed_variant_1)
+unnamed_variant_2 = readDNAStringSet(unnamed_variant_2)
+unnamed_variant_3 = readDNAStringSet(unnamed_variant_3)
 
 # Store the sequences in a vector
 genomes <- list(
   alpha_variant,
   beta_variant, 
   gamma_variant, 
+  delta_variant,
   omicron_variant,
   unnamed_variant_1,
   unnamed_variant_2,
