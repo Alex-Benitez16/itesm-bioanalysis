@@ -231,9 +231,13 @@ library(adegenet)
 library(Biostrings)
 library(ggplot2)
 library(tidyr)
+library(stringr)
 
 # Handmade methods for performing operations on data
-decomposeDnaString <- function(str) {
+decomposeDnaString <- function(dna_obj) {
+  str <- as.character(dna_obj)
+  name <- dna_obj@ranges@NAMES[[1]]
+  name <- str_extract(name, "(?<=strain )[^ ]+")
   nstr <- toupper(str)
   char_vec <- strsplit(nstr, "")[[1]]
   
@@ -272,54 +276,48 @@ decomposeDnaString <- function(str) {
     'P_c' = c_count / count,
     'P_g' = g_count / count,
     'P_t' = t_count / count,
-    'P_n' = n_count / count
+    'P_n' = n_count / count,
+    'name' = name
 ));
 }
 
 
 # Obtain the genome sequences from FASTA files
-genome_1 = readDNAStringSet('./resources/GCA_011537295.1/GCA_011537295.1_ASM1153729v1_genomic.fna');
-genome_2 = readDNAStringSet('./resources/GCA_011537695.1/GCA_011537695.1_ASM1153769v1_genomic.fna');
-genome_3 = readDNAStringSet('./resources/GCA_011537705.1/GCA_011537705.1_ASM1153770v1_genomic.fna');
-genome_4 = readDNAStringSet('./resources/GCA_011545165.1/GCA_011545165.1_ASM1154516v1_genomic.fna');
-genome_5 = readDNAStringSet('./resources/GCA_011545245.1/GCA_011545245.1_ASM1154524v1_genomic.fna');
-genome_6 = readDNAStringSet('./resources/GCA_011545275.1/GCA_011545275.1_ASM1154527v1_genomic.fna');
-genome_7 = readDNAStringSet('./resources/GCA_011741995.1/GCA_011741995.1_ASM1174199v1_genomic.fna');
-genome_8 = readDNAStringSet('./resources/GCA_011742015.1/GCA_011742015.1_ASM1174201v1_genomic.fna');
-
 alpha_variant = readDNAStringSet("./resources/variants/b117.fasta")
 beta_variant = readDNAStringSet("./resources/variants/b1351.fasta")
 gamma_variant = readDNAStringSet("./resources/variants/p1.fasta")
-delta_variant = readDNAStringSet("./resources/variants/b16172.fasta")
+delta_variant = readDNAStringSet("./resources/variants/b16172_2.fasta")
 omicron_variant = readDNAStringSet("./resources/variants/b11529.fasta")
+unnamed_variant_1 = readDNAStringSet("./resources/variants/c37.fasta")
+unnamed_variant_2 = readDNAStringSet("./resources/variants/b1525.fasta")
+unnamed_variant_3 = readDNAStringSet("./resources/variants/ba1.fasta")
+
 
 # WARNING: delta_variant seems not to work
 
 # Store the sequences in a vector
 genomes <- list(
-  genome_1,
   alpha_variant,
   beta_variant, 
   gamma_variant, 
-  omicron_variant
+  omicron_variant,
+  unnamed_variant_1,
+  unnamed_variant_2,
+  unnamed_variant_3
 );
 ```
 
 El código de la parte superior se encarga de analizar todas las variantes, y nos devuelve los datos en forma de lista. Con esta función podemos visualizar todos nuestros datos. 
 
 ```{r}
-# Convert to character strings
-genome_strs <- lapply(genomes, as.character);
-
 # Convert to lengths, frequencies and percentages
-genome_freq <- lapply(genome_strs, decomposeDnaString);
+genome_freq <- lapply(genomes, decomposeDnaString);
 
 # Begin the frequency plot
 genome_df <- do.call(rbind, lapply(genome_freq, as.data.frame.list))
-genome_df$group <- factor(c("Base", "Alpha", "Beta", "Gamma", "Omicron"))
 genome_df_pl <- pivot_longer(genome_df, cols = c(N_a, N_c, N_g, N_t), names_to = "property", values_to = "value")
 
-ggplot(genome_df_pl, aes(x = group, y = value, fill = property)) +
+ggplot(genome_df_pl, aes(x = name, y = value, fill = property)) +
   scale_fill_discrete(
     name = "Base",
     labels = c(
@@ -338,8 +336,8 @@ Este bloque de código se encarga de graficar las cantidades de las bases como h
 
 ```{r}
 for (genome in genome_freq) {
-  cg = as.numeric(genome["P_c"]) + as.numeric(genome["P_g"])
-  print(cg)
+  cg = ( as.numeric(genome["P_c"]) + as.numeric(genome["P_g"]) ) * 100
+  cat(sprintf("CG%% of %s: %.2f%% \n", genome["name"], cg))
 }
 ```
 
@@ -347,7 +345,8 @@ Este bloque nos muestra los %CG de cada variante.
 
 ```{r}
 for (genome in genome_freq) {
-  print(substr(genome["qes"], 1, 150))
+  str <- substr(genome["qes"], 1, 150)
+  cat(sprintf("Inverse of %s: %s \n", genome["name"], str))
 }
 ```
 
