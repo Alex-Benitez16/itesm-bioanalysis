@@ -215,7 +215,7 @@ Aún es posible que la LB.1 supere el predominio de KP.2 y KP.3 durante el veran
 ## ¿Cómo buscarías información de la variante del virus en tu país?
 
 Buscaría en sitios oficiales como la Secretaría de Salud, la Organización Mundial de la Salud (OMS) y la Organización Panamericana de la Salud (OPS), ya que son fuentes confiables que publican información actualizada y verificada.
-Además, haría búsquedas específicas en internet usando palabras clave como “variante COVID abril 2025 en México” para encontrar noticias recientes o comunicados importantes.
+Además, haría búsquedas específicas en internet usando palabras clave como “variante COVID abril 2025 en México” para encontrar noticias recientes o comunicados importantes. Como lo vimos en esta investigación, las bases de datos como NCBI podrían ser fuentes de información muy valiosas, donde podría encontrar incluso genomas de las variantes subidas por investigadores mexicanos.
 
 También revisaría las redes sociales oficiales de instituciones de salud y del gobierno, ya que ahí suelen compartir avisos relevantes de forma rápida.
 
@@ -293,9 +293,6 @@ unnamed_variant_1 = readDNAStringSet("./resources/variants/c37.fasta")
 unnamed_variant_2 = readDNAStringSet("./resources/variants/b1525.fasta")
 unnamed_variant_3 = readDNAStringSet("./resources/variants/ba1.fasta")
 
-
-# WARNING: delta_variant seems not to work
-
 # Store the sequences in a vector
 genomes <- list(
   alpha_variant,
@@ -333,7 +330,11 @@ ggplot(genome_df_pl, aes(x = name, y = value, fill = property)) +
   theme_minimal()
 ```
 
-Este bloque de código se encarga de graficar las cantidades de las bases como histogramas. 
+Este bloque de código se encarga de graficar las cantidades de las bases como histogramas. Se puede apreciar que existen diferencias entre las cantidades de las bases, aunque estas no son muy grandes. 
+
+Haciendo un análisis simple nos podemos dar cuenta de que variantes son más similares, viendo que tan parecidas son las cantidades de cada base. Se puede observar, por ejemplo, que la variante B.1.1.529 parece ser la más diferente. Sin embargo, esto no es un análisis del todo correcto, ya que esto podría ser simplemente consecuencia de que no se sequenció el genoma completo o no se detectaron todas las bases. 
+
+Para detectar diferencias habría que hacer un análisis más profundo, como lo puede ser un árbol jerarquico. 
 
 ```{r}
 for (genome in genome_freq) {
@@ -350,7 +351,7 @@ ggplot(genome_df, aes(x = name, y = GC)) +
   coord_cartesian(ylim = c(30, 40))
 ```
 
-Este bloque nos muestra los %CG de cada variante. 
+Este bloque nos muestra los %CG de cada variante. Se puede observar que todas las variantes cuentan con un CG relativamente bajo. Ninguna pasa el 40%. Esto también se podía observar en la gráfica anterior, ya que es visible que el génoma de este virus tiene relativamente poca citosina y guanina. 
 
 ```{r}
 for (genome in genome_freq) {
@@ -368,13 +369,22 @@ ggplot(genome_df, aes(x = name, y = len)) +
 ```
 
 ```{r}
+
+Las longitudes de los genomas también son muy similares. Suponiendo que los genomas obtenidos están completos, se puede ver que B.1.525, que corresponde con la variante Eta, es la más pequeña. Este es el cambio más grande, ya que el resto parece estar alrededor de la misma longitud. 
+
 for (genome in genome_freq) {
-  str <- substr(genome["qes"], 1, 150)
-  cat(sprintf("Inverse of %s: %s \n", genome["name"], str))
+  # This is just to divide all sequences so they are visible 
+  str_1 <- substr(genome["qes"], 1, 30)
+  str_2 <- substr(genome["qes"], 31, 60)
+  str_3 <- substr(genome["qes"], 61, 90)
+  str_4 <- substr(genome["qes"], 91, 120)
+  str_5 <- substr(genome["qes"], 121, 150)
+
+  cat(sprintf("Inverse of %s: %s \n                   %s \n                  %s \n                  %s \n                 %s\n", genome["name"], str_1, str_2, str_3, str_4, str_5))
 }
 ```
 
-Este bloque de codigo nos muestra las variantes en contrasentido. Solo se muestran las primeras 150 bases. 
+Este bloque de codigo nos muestra las variantes en contrasentido. Solo se muestran las primeras 150 bases. Es curioso notar que todas terminan con Ns, lo que quizá haya sido un error al secuenciar o simplemente una característica de los archivos FASTA. 
 
 ## Bibliografía: 
 
