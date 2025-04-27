@@ -277,6 +277,7 @@ decomposeDnaString <- function(dna_obj) {
     'P_g' = g_count / count,
     'P_t' = t_count / count,
     'P_n' = n_count / count,
+    'GC' = ( (c_count / count) + (g_count / count) ) * 100,
     'name' = name
 ));
 }
@@ -336,12 +337,35 @@ Este bloque de código se encarga de graficar las cantidades de las bases como h
 
 ```{r}
 for (genome in genome_freq) {
-  cg = ( as.numeric(genome["P_c"]) + as.numeric(genome["P_g"]) ) * 100
-  cat(sprintf("CG%% of %s: %.2f%% \n", genome["name"], cg))
+  cat(sprintf("CG%% of %s: %.2f%% \n", genome["name"], genome["GC"]))
 }
+
+ggplot(genome_df, aes(x = name, y = GC)) +
+  geom_col(fill = "skyblue") +
+  labs(title = "GC Percentage per Genome",
+       x = "Genome",
+       y = "CG Percentage") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  coord_cartesian(ylim = c(30, 40))
 ```
 
 Este bloque nos muestra los %CG de cada variante. 
+
+```{r}
+for (genome in genome_freq) {
+  cat(sprintf("Length of %s: %.0f \n", genome["name"], genome["len"]))
+}
+
+ggplot(genome_df, aes(x = name, y = len)) +
+  geom_col(fill = "skyblue") +
+  labs(title = "Lengths of each genome",
+       x = "Genome",
+       y = "Length") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  coord_cartesian(ylim = c(29700, 30000))
+```
 
 ```{r}
 for (genome in genome_freq) {
